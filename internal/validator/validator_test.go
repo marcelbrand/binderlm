@@ -208,6 +208,7 @@ func TestValidate_DriveCheckWithoutCreds(t *testing.T) {
 	}
 
 	// Temporarily clear Google env vars
+	t.Setenv("BINDERLM_TOKEN_FILE", filepath.Join(tmpDir, "nonexistent_token.json"))
 	origJSON := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
 	origFile := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
 	os.Unsetenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")

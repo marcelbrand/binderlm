@@ -99,6 +99,7 @@ func TestSyncWithMockDrive(t *testing.T) {
 }
 
 func TestSyncMissingCredentials(t *testing.T) {
+	t.Setenv("BINDERLM_TOKEN_FILE", filepath.Join(t.TempDir(), "nonexistent_token.json"))
 	// Temporarily clear environment variables
 	origJSON := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
 	origFile := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")

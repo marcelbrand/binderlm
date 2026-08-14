@@ -145,8 +145,8 @@ Follow these steps to configure Google Drive sync with a Google Service Account:
 For local development or personal Google Drive usage without managing Service Account keys:
 
 ```bash
-# Log in with your personal Google account
-binderlm login
+# Log in with your personal Google account (optionally loading credentials from a .env file)
+binderlm login --env-file .env
 
 # Check active authentication status
 binderlm auth status
@@ -157,6 +157,10 @@ binderlm sync --config binderlm.yaml
 # Log out and clear cached credentials
 binderlm logout
 ```
+
+> [!TIP]
+> **Explicit `--env-file` Flag:** 
+> Any `binderlm` command accepts `-e, --env-file <path>` (e.g. `binderlm sync -e .env`) to safely load custom environment variables without global shell exports.
 
 ---
 

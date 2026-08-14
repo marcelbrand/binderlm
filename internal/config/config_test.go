@@ -123,3 +123,33 @@ sections:
 		t.Errorf("expected folder_id to be overridden to env_folder_12345, got %s", cfg.Drive.FolderID)
 	}
 }
+
+func TestLoadEnvFile(t *testing.T) {
+	tempDir := t.TempDir()
+	envPath := filepath.Join(tempDir, ".env")
+
+	content := `
+# Sample comment
+GDRIVE_OAUTH_CLIENT_ID=test-client-id-123
+export GDRIVE_OAUTH_CLIENT_SECRET="test-secret-456"
+TEST_QUOTED_VAR='quoted-val'
+`
+	if err := os.WriteFile(envPath, []byte(content), 0644); err != nil {
+		t.Fatalf("failed to write test env: %v", err)
+	}
+
+	if err := config.LoadEnvFile(envPath); err != nil {
+		t.Fatalf("unexpected error loading env file: %v", err)
+	}
+
+	if os.Getenv("GDRIVE_OAUTH_CLIENT_ID") != "test-client-id-123" {
+		t.Errorf("expected test-client-id-123, got %s", os.Getenv("GDRIVE_OAUTH_CLIENT_ID"))
+	}
+	if os.Getenv("GDRIVE_OAUTH_CLIENT_SECRET") != "test-secret-456" {
+		t.Errorf("expected test-secret-456, got %s", os.Getenv("GDRIVE_OAUTH_CLIENT_SECRET"))
+	}
+	if os.Getenv("TEST_QUOTED_VAR") != "quoted-val" {
+		t.Errorf("expected quoted-val, got %s", os.Getenv("TEST_QUOTED_VAR"))
+	}
+}
+
