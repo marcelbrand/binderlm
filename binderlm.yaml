@@ -12,8 +12,8 @@ output:
 
 # Google Drive Target Configuration
 drive:
-  enabled: false
-  folder_id: ""
+  enabled: true
+  folder_id: "1lJhiIg9R2T8hifZMy9ydEcBAIXNeoVDL"
   mime_type: "text/markdown"
 
 # Sections and Document Structure

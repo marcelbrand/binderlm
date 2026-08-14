@@ -20,9 +20,13 @@ binderlm/
 ├── cmd/
 │   └── binderlm/
 │       ├── main.go               # Cobra CLI root & entry point
+│       ├── auth.go               # 'auth status' subcommand
 │       ├── build.go              # 'build' subcommand (local assembly)
+│       ├── login.go              # 'login' subcommand (interactive developer OAuth)
+│       ├── logout.go             # 'logout' subcommand (credential cleanup)
 │       ├── sync.go               # 'sync' subcommand (Drive upload & upsert)
-│       └── validate.go           # 'validate' subcommand (config & path linting)
+│       ├── validate.go           # 'validate' subcommand (config & path linting)
+│       └── version.go            # 'version' subcommand
 ├── internal/
 │   ├── config/
 │   │   ├── config.go             # Schema structs & YAML unmarshaling (gopkg.in/yaml.v3)
@@ -40,7 +44,8 @@ binderlm/
 │   │   └── model.go              # In-memory document and section models
 │   └── drive/
 │       ├── client.go             # Google Drive API v3 client factory
-│       ├── auth.go               # Service account resolution (file path & env JSON)
+│       ├── auth.go               # Auth resolution hierarchy & status inspector
+│       ├── oauth.go              # Interactive OAuth2 flow & token cache manager
 │       └── uploader.go           # Idempotent search, create & update operations
 ├── binderlm.example.yaml         # Reference configuration template
 ├── README.md                     # User-facing documentation & quick start
@@ -115,6 +120,8 @@ sections:
 3. **Authentication Hierarchy**:
    - 1st: `GOOGLE_APPLICATION_CREDENTIALS_JSON` (in-memory JSON string for CI/CD).
    - 2nd: `GOOGLE_APPLICATION_CREDENTIALS` (filepath to service account JSON).
+   - 3rd: Cached Developer OAuth Token (`~/.config/binderlm/token.json` via `binderlm login`).
+   - 4th: Application Default Credentials (ADC).
    - Folder ID: CLI flag `--folder-id` > Config file `drive.folder_id` > Env var `GDRIVE_FOLDER_ID`.
 
 4. **Error Handling**:

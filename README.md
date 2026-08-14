@@ -140,13 +140,70 @@ Follow these steps to configure Google Drive sync with a Google Service Account:
 4. Grant **Editor** permissions and uncheck "Notify people" (service accounts cannot receive emails).
 5. Copy the **Folder ID** from the folder URL (the string after `/folders/` in your browser address bar).
 
-### 4. Environment Variables
+### 4. Interactive Developer Login (`binderlm login`)
+
+For local development or personal Google Drive usage without managing Service Account keys:
+
+```bash
+# Log in with your personal Google account
+binderlm login
+
+# Check active authentication status
+binderlm auth status
+
+# Sync directly using your personal Drive storage quota
+binderlm sync --config binderlm.yaml
+
+# Log out and clear cached credentials
+binderlm logout
+```
+
+---
+
+## ⚡ The Hybrid Personal Drive + CI/CD Workflow Pattern
+
+Google Drive API enforces a **0 MB storage quota** for Service Accounts on personal (`@gmail.com`) Google Drive accounts. When a Service Account creates a new file, it triggers a `storageQuotaExceeded` error. However, when a file is **updated** (`Files.Update`), Google charges storage quota to the **file owner** rather than the editor.
+
+`binderlm` enables a seamless hybrid pattern that bypasses this limitation without requiring manual file uploads in the Google Drive web UI:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│ 1. Local Developer Initial Setup (One-Time)                            │
+│                                                                        │
+│  $ binderlm login   ──► Authenticates with personal Google Account     │
+│  $ binderlm sync    ──► Creates target file in Google Drive            │
+│                         (Owned by developer, uses personal 15GB quota) │
+│  Drive Web UI       ──► Share folder with Service Account as 'Editor'  │
+└──────────────────────────────────┬─────────────────────────────────────┘
+                                   │
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ 2. Automated CI/CD Execution (On Every Git Push)                       │
+│                                                                        │
+│  GitHub Actions / GitLab CI                                            │
+│  $ binderlm sync    ──► Authenticates with Service Account Key Secret  │
+│                         Detects existing file & executes Files.Update  │
+│                         (Zero quota errors, zero browser interactions) │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 5. Environment Variables & Auth Hierarchy
+
+`binderlm` automatically resolves credentials in the following order:
+1. `GOOGLE_APPLICATION_CREDENTIALS_JSON` — In-memory JSON string (ideal for CI/CD secrets).
+2. `GOOGLE_APPLICATION_CREDENTIALS` — Local file path to Service Account JSON key.
+3. Cached OAuth User Token (`~/.config/binderlm/token.json` via `binderlm login`).
+4. Google Application Default Credentials (ADC).
 
 | Variable | Description |
 | :--- | :--- |
 | `GOOGLE_APPLICATION_CREDENTIALS` | Local file path to the Service Account JSON key (e.g. `./credentials.json`). |
 | `GOOGLE_APPLICATION_CREDENTIALS_JSON` | Raw JSON string content of the Service Account key (ideal for CI/CD secrets). |
 | `GDRIVE_FOLDER_ID` | Optional default folder ID override (can also be configured in `binderlm.yaml` or `--folder-id`). |
+| `GDRIVE_OAUTH_CLIENT_ID` | Optional custom Google OAuth Client ID override. |
+| `GDRIVE_OAUTH_CLIENT_SECRET` | Optional custom Google OAuth Client Secret override. |
 
 ---
 
@@ -193,7 +250,10 @@ jobs:
 cmd/
   binderlm/
     main.go           # CLI Entrypoint (Cobra root & flags)
+    auth.go           # 'auth status' subcommand
     build.go          # 'build' subcommand (local assembly)
+    login.go          # 'login' subcommand (interactive developer OAuth)
+    logout.go         # 'logout' subcommand (credential cleanup)
     sync.go           # 'sync' subcommand (Google Drive upsert & dry-run)
     validate.go       # 'validate' subcommand (static & deep linting)
     version.go        # 'version' subcommand
@@ -213,8 +273,9 @@ internal/
     model.go          # Document and section data models
     toc.go            # TOC generator & slug disambiguation
   drive/
-    auth.go           # Service Account auth resolution (JSON & file)
+    auth.go           # Auth resolution hierarchy & status inspector
     client.go         # Google Drive v3 client factory
+    oauth.go          # Interactive OAuth2 flow & token cache manager
     uploader.go       # Idempotent file search, create & update
 ```
 
@@ -228,7 +289,7 @@ For in-depth architectural details, requirements, and technical specifications, 
 - [x] **Phase 1**: Core Parser, Heading Shifter & Assembler (Local `build`)
 - [x] **Phase 2**: Google Drive API v3 Client, Idempotent Upsert & Dry-Run (`sync`)
 - [x] **Phase 3**: Configuration & Path Validation Subcommand (`validate`), Unit & Golden Tests, CI/CD Workflows
-- [ ] **Phase 4**: Interactive Developer OAuth Login (`binderlm login`) for personal Google Drive accounts
+- [x] **Phase 4**: Interactive Developer OAuth Login (`binderlm login`) for personal Google Drive accounts
 - [ ] **Phase 5**: Automated GitHub Actions and Release pipeline
 
 ---

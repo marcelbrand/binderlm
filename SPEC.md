@@ -324,4 +324,6 @@ gantt
 
 ### Phase 4: Interactive OAuth & Developer Experience
 * Implement `binderlm login` and `binderlm logout` commands for local interactive OAuth2 authentication.
-* Support token caching in `~/.config/binderlm/token.json` so personal Google Drive users can sync and create files directly using personal Drive storage quota without Service Account setup.
+* Support secure token caching in `~/.config/binderlm/token.json` (`0600`) so personal Google Drive users can sync and create files directly using personal Drive storage quota without Service Account setup.
+* Introduce `binderlm auth status` command for inspecting active auth source.
+* Formulate and document the **Hybrid Personal Drive + CI/CD Workflow** pattern to solve Google Drive's 0-quota limitation for automated pipelines.

@@ -21,3 +21,6 @@ credentials.json
 service-account*.json
 !credentials.example.json
 
+# env
+.env
+!.env.example
