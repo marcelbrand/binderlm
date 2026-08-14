@@ -1,0 +1,20 @@
+version: "1"
+
+output:
+  filename: "expected_output.md"
+  title: "Basic Sample Documentation"
+  description: "Aggregated documentation for the basic example repository."
+  generate_toc: true
+  inject_source_hints: true
+  frontmatter_mode: "strip"
+  max_heading_level: 6
+
+sections:
+  - title: "Overview"
+    level: 1
+    files:
+      - "docs/intro.md"
+  - title: "Guides"
+    level: 1
+    files:
+      - "docs/usage.md"

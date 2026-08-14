@@ -1,0 +1,30 @@
+version: "1"
+
+output:
+  filename: "expected_output.md"
+  title: "Microservices Platform Context"
+  description: "Aggregated architecture and service documentation."
+  generate_toc: true
+  inject_source_hints: true
+  frontmatter_mode: "table"
+  max_heading_level: 6
+
+sections:
+  - title: "Common Packages"
+    level: 1
+    path: "packages/common/docs"
+    pattern: "**/*.md"
+
+  - title: "Core Services"
+    level: 1
+    subsections:
+      - title: "Auth Service"
+        level: 2
+        path: "services/auth/docs"
+        pattern: "**/*.md"
+        exclude:
+          - "**/_drafts/**"
+      - title: "Payment Service"
+        level: 2
+        path: "services/payment/docs"
+        pattern: "**/*.md"
