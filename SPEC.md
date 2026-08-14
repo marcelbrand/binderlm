@@ -2,7 +2,7 @@
 
 **Document Version:** 1.0.0  
 **Status:** Approved for Implementation  
-**Target Language:** Go (1.22+)  
+**Target Language:** Go (1.26+)  
 **Repository:** `binderlm`
 
 ---

@@ -1,7 +1,7 @@
 # AGENTS.md — binderlm Project Context & Guidelines
 
 ## 1. Project Purpose & Summary
-`binderlm` is a standalone Go (1.22+) CLI tool that aggregates distributed Markdown documentation across repositories, microservices, and packages into a unified, hierarchically structured context document and synchronizes it directly to Google Drive for consumption in **Google NotebookLM** and enterprise RAG pipelines.
+`binderlm` is a standalone Go (1.26+) CLI tool that aggregates distributed Markdown documentation across repositories, microservices, and packages into a unified, hierarchically structured context document and synchronizes it directly to Google Drive for consumption in **Google NotebookLM** and enterprise RAG pipelines.
 
 ### Key Functionality
 1. **Markdown Aggregation**: Traverses directories and explicit file paths with glob patterns (`**/*.md`), respecting exclusions.
@@ -54,7 +54,7 @@ binderlm/
 
 | Component | Library / Package | Purpose |
 | :--- | :--- | :--- |
-| **Language & Runtime** | Go 1.22+ | Statically linked binary (`CGO_ENABLED=0`) |
+| **Language & Runtime** | Go 1.26+ | Statically linked binary (`CGO_ENABLED=0`) |
 | **CLI Framework** | `github.com/spf13/cobra` | Commands (`build`, `sync`, `validate`, `version`) and flags |
 | **Configuration** | `gopkg.in/yaml.v3` | Strict YAML parsing with line numbers |
 | **Markdown AST** | `github.com/yuin/goldmark` | CommonMark AST parsing (safe heading transformations) |
