@@ -105,18 +105,18 @@ sections:
 | Command | Flags | Description |
 | :--- | :--- | :--- |
 | `binderlm setup` | | Interactive setup wizard for OAuth client credentials or Service Account keys. |
-| `binderlm login` | `--port`<br>`--no-browser`<br>`--client-id`<br>`--client-secret` | Initiates interactive OAuth2 browser login for personal Google Drive accounts. |
-| `binderlm auth status` | | Inspects active Google Drive authentication method and account. |
+| `binderlm login` | `--port <port>`<br>`--no-browser`<br>`--client-id <id>`<br>`--client-secret <secret>`<br>`--timeout <duration>` | Initiates interactive OAuth2 browser login for personal Google Drive accounts. |
+| `binderlm auth status` | `-a, --auth <mode>` | Inspects active Google Drive authentication method and account. |
 | `binderlm logout` | | Deletes locally cached OAuth credentials from disk. |
 | `binderlm build` | `-c, --config <path>`<br>`-o, --output <path>`<br>`--stdout` | Assembles local markdown files into a single unified context file. |
-| `binderlm sync` | `-c, --config <path>`<br>`--folder-id <id>`<br>`--dry-run`<br>`--keep-local` | Assembles markdown and uploads/updates the target file in Google Drive. |
+| `binderlm sync` | `-c, --config <path>`<br>`-a, --auth <mode>`<br>`-e, --env-file <path>`<br>`--folder-id <id>`<br>`--dry-run`<br>`--keep-local`<br>`-o, --output <path>` | Assembles markdown and uploads/updates the target file in Google Drive. |
 | `binderlm validate` | `-c, --config <path>`<br>`--strict`<br>`--check-drive` | Validates configuration schema, file paths, globs, frontmatter syntax, and Drive auth. |
 | `binderlm version` | | Prints version and build metadata. |
 
 ### Global Flags
-- `-a, --auth string`: Authentication mode override: `'user'` (personal OAuth), `'sa'` (Service Account), or `'auto'` (default).
-- `-c, --config string`: Path to config file (default: `binderlm.yaml` or `.binderlm.yaml`).
-- `-e, --env-file string`: Path to `.env` file to load environment variables from.
+- `-a, --auth <mode>`: Authentication mode override: `'user'` (personal OAuth), `'sa'` (Service Account), or `'auto'` (default).
+- `-c, --config <path>`: Path to config file (default: `binderlm.yaml` or `.binderlm.yaml`).
+- `-e, --env-file <path>`: Path to `.env` file to load environment variables from.
 - `-v, --verbose`: Enable verbose debug logging.
 - `-h, --help`: Help for any command.
 

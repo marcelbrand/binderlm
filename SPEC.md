@@ -287,6 +287,7 @@ type SyncResult struct {
   * `--folder-id <id>`: Override target Google Drive folder ID.
   * `--dry-run`: Perform all parsing and remote checks without uploading.
   * `--keep-local`: Keep the locally generated file after sync.
+  * `-o, --output <path>`: Override local output file path when using `--keep-local`.
 * **Exit Codes:** `0` on success, `1` on error, `2` on auth error.
 
 ### 6.7 `binderlm validate`
