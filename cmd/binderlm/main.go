@@ -19,7 +19,8 @@ var rootCmd = &cobra.Command{
 	Long: `binderlm consolidates decentralized Markdown documentation across repositories,
 microservices, and packages into a unified, hierarchically structured context document
 for Google NotebookLM and enterprise RAG pipelines.`,
-	SilenceUsage: true,
+	SilenceUsage:  true,
+	SilenceErrors: true,
 }
 
 func init() {
