@@ -1,0 +1,25 @@
+version: "1"
+
+# Output settings
+output:
+  filename: "project_context_latest.md"
+  title: "Engineering Master Context"
+  description: "Aggregated engineering documentation compiled for NotebookLM"
+  generate_toc: true
+  inject_source_hints: true
+  frontmatter_mode: "strip" # Options: strip | table | keep
+  max_heading_level: 6
+
+# Google Drive Target Configuration
+drive:
+  enabled: false
+  folder_id: "YOUR_GOOGLE_DRIVE_FOLDER_ID"
+  mime_type: "text/markdown"
+
+# Sections and Document Structure
+sections:
+  - title: "Architecture & Overview"
+    level: 1
+    files:
+      - "./README.md"
+      - "./SPEC.md"
