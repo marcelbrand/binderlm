@@ -170,18 +170,22 @@ jobs:
 ```
 cmd/
   binderlm/
-    main.go           # CLI Entrypoint (Cobra commands & flags)
+    main.go           # CLI Entrypoint (Cobra root & flags)
+    build.go          # 'build' subcommand (local assembly)
+    version.go        # 'version' subcommand
 internal/
   config/
-    config.go         # YAML parser, environment variable overrides & validation
+    config.go         # YAML parser & defaults
+    env.go            # Environment variable overrides
+    validator.go      # Configuration semantic validation
   parser/
-    frontmatter.go    # YAML frontmatter extraction, parsing & stripping
-    shifter.go        # AST-safe markdown heading demotion/shifting
+    frontmatter.go    # YAML frontmatter extraction & modes (strip, table, keep)
+    heading_shifter.go# AST-safe markdown heading demotion/shifting
+    reader.go         # Directory traversal, globbing & exclusions
   stitcher/
-    assembler.go      # Section collector, ordering & TOC generator
-  drive/
-    client.go         # Google Drive API v3 client & authentication
-    uploader.go       # Idempotent file search and upsert logic
+    assembler.go      # Section collector, ordering & assembly
+    model.go          # Document and section data models
+    toc.go            # TOC generator & slug disambiguation
 ```
 
 For in-depth architectural details, requirements, and technical specifications, refer to [SPEC.md](SPEC.md).
@@ -191,7 +195,7 @@ For in-depth architectural details, requirements, and technical specifications, 
 ## 🗺️ Roadmap
 
 - [x] Initial Architecture & Specification ([SPEC.md](SPEC.md))
-- [ ] **Phase 1**: Core Parser, Heading Shifter & Assembler (Local `build`)
+- [x] **Phase 1**: Core Parser, Heading Shifter & Assembler (Local `build`)
 - [ ] **Phase 2**: Google Drive API v3 Client & Idempotent Upsert (`sync`)
 - [ ] **Phase 3**: Multi-repository / Git submodule support & Validation CLI
 - [ ] **Phase 4**: Automated GitHub Actions and Release pipeline
