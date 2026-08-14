@@ -244,26 +244,59 @@ type SyncResult struct {
 
 ## 6. CLI Command Specifications
 
-### 6.1 `binderlm build`
+### 6.1 `binderlm setup`
+* **Usage:** `binderlm setup [flags]`
+* **Description:** Interactive setup wizard that configures Google OAuth Desktop Client credentials (`~/.config/binderlm/client.json`) or Service Account keys (`~/.config/binderlm/service_account.json`).
+* **Exit Codes:** `0` on success, `1` on error.
+
+### 6.2 `binderlm login`
+* **Usage:** `binderlm login [flags]`
+* **Flags:**
+  * `--port <port>`: Local callback port for OAuth loopback listener (default `8085`).
+  * `--no-browser`: Do not automatically open browser; display URL only.
+  * `--client-id <id>`: Custom Google OAuth Client ID override.
+  * `--client-secret <secret>`: Custom Google OAuth Client Secret override.
+  * `--timeout <duration>`: Maximum wait time for browser authorization (default `3m`).
+* **Exit Codes:** `0` on success, `1` on error.
+
+### 6.3 `binderlm logout`
+* **Usage:** `binderlm logout [flags]`
+* **Description:** Deletes cached OAuth user tokens from `~/.config/binderlm/token.json`.
+* **Exit Codes:** `0` on success, `1` on error.
+
+### 6.4 `binderlm auth status`
+* **Usage:** `binderlm auth status [flags]`
+* **Flags:**
+  * `-a, --auth <mode>`: Authentication mode to inspect (`user`, `sa`, or `auto`).
+* **Exit Codes:** `0` on success, `1` on error.
+
+### 6.5 `binderlm build`
 * **Usage:** `binderlm build [flags]`
 * **Flags:**
-  * `-c, --config string`: Path to config file (default `binderlm.yaml`).
-  * `-o, --output string`: Override output file path defined in config.
+  * `-c, --config <path>`: Path to config file (default `binderlm.yaml`).
+  * `-o, --output <path>`: Override output file path defined in config.
   * `--stdout`: Write stitched markdown directly to standard output.
 * **Exit Codes:** `0` on success, `1` on error.
 
-### 6.2 `binderlm sync`
+### 6.6 `binderlm sync`
 * **Usage:** `binderlm sync [flags]`
 * **Flags:**
-  * `-c, --config string`: Path to config file (default `binderlm.yaml`).
-  * `--folder-id string`: Override target Google Drive folder ID.
+  * `-c, --config <path>`: Path to config file (default `binderlm.yaml`).
+  * `-a, --auth <mode>`: Override auth mode (`user`, `sa`, or `auto`).
+  * `-e, --env-file <path>`: Path to `.env` file to load environment variables.
+  * `--folder-id <id>`: Override target Google Drive folder ID.
   * `--dry-run`: Perform all parsing and remote checks without uploading.
   * `--keep-local`: Keep the locally generated file after sync.
 * **Exit Codes:** `0` on success, `1` on error, `2` on auth error.
 
-### 6.3 `binderlm validate`
+### 6.7 `binderlm validate`
 * **Usage:** `binderlm validate [flags]`
+* **Flags:**
+  * `-c, --config <path>`: Path to config file (default `binderlm.yaml`).
+  * `--strict`: Treat warnings (such as unmatched glob patterns) as fatal errors.
+  * `--check-drive`: Validate Google Drive credentials and folder access.
 * **Description:** Performs static analysis on `binderlm.yaml`, checks file/glob resolution, verifies frontmatter validity, and checks Google Drive credentials if configured.
+* **Exit Codes:** `0` on success, `1` on validation failure, `2` on auth failure.
 
 ---
 
@@ -331,8 +364,9 @@ gantt
 * Implement comprehensive test suite (unit tests with fixtures, AST golden tests).
 * Create GitHub Actions workflows for automated releases and documentation sync.
 
-### Phase 4: Interactive OAuth & Developer Experience
+### Phase 4: Interactive OAuth, Setup Wizard & Developer Experience
+* Implement interactive setup wizard `binderlm setup` to configure Desktop OAuth Client credentials or Service Account keys into `~/.config/binderlm/`.
 * Implement `binderlm login` and `binderlm logout` commands for local interactive OAuth2 authentication.
 * Support secure token caching in `~/.config/binderlm/token.json` (`0600`) so personal Google Drive users can sync and create files directly using personal Drive storage quota without Service Account setup.
-* Introduce `binderlm auth status` command for inspecting active auth source.
+* Introduce `binderlm auth status` command and `-a, --auth <user|sa>` mode override for inspecting and selecting active auth sources.
 * Formulate and document the **Hybrid Personal Drive + CI/CD Workflow** pattern to solve Google Drive's 0-quota limitation for automated pipelines.

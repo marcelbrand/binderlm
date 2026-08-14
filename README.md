@@ -224,11 +224,12 @@ Google Drive API enforces a **0 MB storage quota** for Service Accounts on perso
 
 ### 5. Environment Variables & Auth Hierarchy
 
-`binderlm` automatically resolves credentials in the following order:
+`binderlm` automatically resolves credentials in the following order (or explicitly override via `-a, --auth <user|sa>`):
 1. `GOOGLE_APPLICATION_CREDENTIALS_JSON` — In-memory JSON string (ideal for CI/CD secrets).
 2. `GOOGLE_APPLICATION_CREDENTIALS` — Local file path to Service Account JSON key.
-3. Cached OAuth User Token (`~/.config/binderlm/token.json` via `binderlm login`).
-4. Google Application Default Credentials (ADC).
+3. Cached OAuth User Token (`~/.config/binderlm/token.json` via `binderlm login` / `binderlm setup`).
+4. Global Service Account Key (`~/.config/binderlm/service_account.json` via `binderlm setup`).
+5. Google Application Default Credentials (ADC).
 
 | Variable | Description |
 | :--- | :--- |
@@ -237,6 +238,8 @@ Google Drive API enforces a **0 MB storage quota** for Service Accounts on perso
 | `GDRIVE_FOLDER_ID` | Optional default folder ID override (can also be configured in `binderlm.yaml` or `--folder-id`). |
 | `GDRIVE_OAUTH_CLIENT_ID` | Optional custom Google OAuth Client ID override. |
 | `GDRIVE_OAUTH_CLIENT_SECRET` | Optional custom Google OAuth Client Secret override. |
+| `BINDERLM_AUTH_MODE` | Optional default authentication mode override (`user`, `sa`, or `auto`). |
+| `BINDERLM_CONFIG_DIR` | Optional custom configuration directory override (default: `~/.config/binderlm`). |
 
 ---
 
@@ -306,9 +309,10 @@ internal/
     model.go          # Document and section data models
     toc.go            # TOC generator & slug disambiguation
   drive/
-    auth.go           # Auth resolution hierarchy & status inspector
+    auth.go           # 5-tier auth resolution hierarchy & status inspector
     client.go         # Google Drive v3 client factory
     oauth.go          # Interactive OAuth2 flow & token cache manager
+    paths.go          # Central ~/.config/binderlm/ credential storage
     uploader.go       # Idempotent file search, create & update
 ```
 
@@ -322,7 +326,7 @@ For in-depth architectural details, requirements, and technical specifications, 
 - [x] **Phase 1**: Core Parser, Heading Shifter & Assembler (Local `build`)
 - [x] **Phase 2**: Google Drive API v3 Client, Idempotent Upsert & Dry-Run (`sync`)
 - [x] **Phase 3**: Configuration & Path Validation Subcommand (`validate`), Unit & Golden Tests, CI/CD Workflows
-- [x] **Phase 4**: Interactive Developer OAuth Login (`binderlm login`) for personal Google Drive accounts
+- [x] **Phase 4**: Interactive Setup Wizard (`binderlm setup`), Developer OAuth Login (`binderlm login`), Mode Overrides (`--auth`), and Hybrid CI/CD Documentation
 - [ ] **Phase 5**: Automated GitHub Actions and Release pipeline
 
 ---

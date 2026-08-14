@@ -122,9 +122,10 @@ sections:
 3. **Authentication Hierarchy (5-Tier Resolution)**:
    - 1st: `GOOGLE_APPLICATION_CREDENTIALS_JSON` (in-memory JSON string for CI/CD).
    - 2nd: `GOOGLE_APPLICATION_CREDENTIALS` (filepath to service account JSON).
-   - 3rd: Global Service Account (`~/.config/binderlm/service_account.json`).
-   - 4th: Cached Developer OAuth Token (`~/.config/binderlm/token.json` via `binderlm login`).
+   - 3rd: Cached Developer OAuth Token (`~/.config/binderlm/token.json` via `binderlm login` / `binderlm setup`).
+   - 4th: Global Service Account (`~/.config/binderlm/service_account.json` via `binderlm setup`).
    - 5th: Application Default Credentials (ADC).
+   - Flag Override: `-a, --auth <user|sa>` directly forces user OAuth or Service Account.
    - Folder ID: CLI flag `--folder-id` > Config file `drive.folder_id` > Env var `GDRIVE_FOLDER_ID`.
 
 4. **Error Handling**:
@@ -132,6 +133,6 @@ sections:
    - Return appropriate exit codes (`0` = success, `1` = general error, `2` = auth failure).
 
 5. **Key Documentation References**:
-   - Detailed specification and requirements: [SPEC.md](file:///Users/mbrand/Projects/binderlm/SPEC.md)
-   - CLI usage & examples: [README.md](file:///Users/mbrand/Projects/binderlm/README.md)
-   - Example configuration: [binderlm.example.yaml](file:///Users/mbrand/Projects/binderlm/binderlm.example.yaml)
+   - Detailed specification and requirements: [SPEC.md](SPEC.md)
+   - CLI usage & examples: [README.md](README.md)
+   - Example configuration: [binderlm.example.yaml](binderlm.example.yaml)
