@@ -301,6 +301,8 @@ gantt
     Validation Subcommand           :p3_1, after p2_3, 2d
     GitHub Action Workflow & Docs   :p3_2, after p3_1, 2d
     Unit & Integration Tests        :p3_3, after p3_2, 3d
+    section Phase 4: Developer Auth
+    Interactive OAuth Login         :p4_1, after p3_3, 2d
 ```
 
 ### Phase 1: Core Parsing & Local Assembly
@@ -312,9 +314,14 @@ gantt
 ### Phase 2: Google Drive Integration
 * Implement `internal/drive` (Service account credentials via file and env string).
 * Implement idempotent search and upsert logic via Google Drive API v3.
+* Add user-friendly diagnostic guidance for personal Google Drive quota limits.
 * Build `cmd/binderlm/sync.go` with `--dry-run` support.
 
 ### Phase 3: Validation, CI/CD & Testing
 * Implement `cmd/binderlm/validate.go`.
 * Implement comprehensive test suite (unit tests with fixtures, AST golden tests).
 * Create GitHub Actions workflows for automated releases and documentation sync.
+
+### Phase 4: Interactive OAuth & Developer Experience
+* Implement `binderlm login` and `binderlm logout` commands for local interactive OAuth2 authentication.
+* Support token caching in `~/.config/binderlm/token.json` so personal Google Drive users can sync and create files directly using personal Drive storage quota without Service Account setup.

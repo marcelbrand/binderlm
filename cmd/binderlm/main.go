@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/marcelbrand/binderlm/internal/drive"
 	"github.com/spf13/cobra"
 )
 
@@ -29,6 +30,10 @@ func init() {
 func main() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		if drive.IsAuthError(err) {
+			os.Exit(2)
+		}
 		os.Exit(1)
 	}
 }
+
