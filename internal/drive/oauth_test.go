@@ -84,21 +84,43 @@ func TestGetAuthStatus_ServiceAccountJSON(t *testing.T) {
 }
 
 func TestGetAuthStatus_Unauthenticated(t *testing.T) {
+	t.Setenv("BINDERLM_CONFIG_DIR", t.TempDir())
+	t.Setenv("BINDERLM_TOKEN_FILE", filepath.Join(t.TempDir(), "nonexistent.json"))
 	origJSON := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
 	origFile := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
-	origToken := os.Getenv("BINDERLM_TOKEN_FILE")
 	defer func() {
 		os.Setenv("GOOGLE_APPLICATION_CREDENTIALS_JSON", origJSON)
 		os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", origFile)
-		os.Setenv("BINDERLM_TOKEN_FILE", origToken)
 	}()
 
 	os.Unsetenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
 	os.Unsetenv("GOOGLE_APPLICATION_CREDENTIALS")
-	os.Setenv("BINDERLM_TOKEN_FILE", "/non/existent/token.json")
 
 	status := GetAuthStatus(context.Background())
 	if status.Type != AuthTypeNone && status.Type != AuthTypeADC {
 		t.Errorf("expected None or ADC, got %s", status.Type)
 	}
 }
+
+func TestAuthMode_Selection(t *testing.T) {
+	if NormalizeAuthMode("user") != "user" || NormalizeAuthMode("oauth") != "user" || NormalizeAuthMode("personal") != "user" {
+		t.Errorf("failed normalizing user auth mode")
+	}
+	if NormalizeAuthMode("sa") != "sa" || NormalizeAuthMode("service_account") != "sa" || NormalizeAuthMode("service-account") != "sa" {
+		t.Errorf("failed normalizing sa auth mode")
+	}
+	if NormalizeAuthMode("auto") != "auto" || NormalizeAuthMode("unknown") != "auto" {
+		t.Errorf("failed normalizing auto auth mode")
+	}
+
+	ctxUser := WithAuthMode(context.Background(), "user")
+	if GetAuthModeFromContext(ctxUser) != "user" {
+		t.Errorf("expected user from context")
+	}
+
+	ctxSA := WithAuthMode(context.Background(), "sa")
+	if GetAuthModeFromContext(ctxSA) != "sa" {
+		t.Errorf("expected sa from context")
+	}
+}
+

@@ -56,16 +56,7 @@ func (s *TokenStorage) TokenPath() (string, error) {
 		return envPath, nil
 	}
 
-	configDir, err := os.UserConfigDir()
-	if err != nil {
-		homeDir, hErr := os.UserHomeDir()
-		if hErr != nil {
-			return "", fmt.Errorf("could not determine user configuration directory: %w", err)
-		}
-		configDir = filepath.Join(homeDir, ".config")
-	}
-
-	return filepath.Join(configDir, "binderlm", "token.json"), nil
+	return filepath.Join(GetConfigDir(), "token.json"), nil
 }
 
 // Save stores the OAuth token in secure JSON format.
@@ -144,27 +135,15 @@ type OAuthManager struct {
 
 // NewOAuthManager creates a new OAuth manager with configured credentials.
 func NewOAuthManager(clientID, clientSecret string, storage *TokenStorage) *OAuthManager {
-	if clientID == "" {
-		clientID = os.Getenv("GDRIVE_OAUTH_CLIENT_ID")
-	}
-	if clientID == "" {
-		clientID = DefaultClientID
-	}
-
-	if clientSecret == "" {
-		clientSecret = os.Getenv("GDRIVE_OAUTH_CLIENT_SECRET")
-	}
-	if clientSecret == "" {
-		clientSecret = DefaultClientSecret
-	}
+	cID, cSecret, _ := LoadClientCredentials(clientID, clientSecret)
 
 	if storage == nil {
 		storage = NewTokenStorage()
 	}
 
 	conf := &oauth2.Config{
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
+		ClientID:     cID,
+		ClientSecret: cSecret,
 		Endpoint:     google.Endpoint,
 		Scopes: []string{
 			drive.DriveScope,

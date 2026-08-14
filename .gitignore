@@ -6,9 +6,11 @@ bin/
 *.so
 *.dylib
 
-# Test artifacts
+# Test & build artifacts
 *.out
 test_output.md
+*_latest.md
+output.md
 
 # IDE & OS
 .DS_Store

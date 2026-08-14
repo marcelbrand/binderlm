@@ -12,6 +12,7 @@ import (
 var (
 	configFile string
 	envFile    string
+	authMode   string
 	verbose    bool
 )
 
@@ -32,6 +33,11 @@ for Google NotebookLM and enterprise RAG pipelines.`,
 				fmt.Fprintf(os.Stderr, "[info] Loaded environment variables from %s\n", envFile)
 			}
 		}
+
+		if authMode != "" {
+			cmd.SetContext(drive.WithAuthMode(cmd.Context(), authMode))
+		}
+
 		return nil
 	},
 }
@@ -39,6 +45,7 @@ for Google NotebookLM and enterprise RAG pipelines.`,
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "Path to config file (default: binderlm.yaml)")
 	rootCmd.PersistentFlags().StringVarP(&envFile, "env-file", "e", "", "Path to .env file to load environment variables from")
+	rootCmd.PersistentFlags().StringVarP(&authMode, "auth", "a", "", "Authentication mode: 'user' (personal OAuth), 'sa' (Service Account), or 'auto'")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose output")
 }
 

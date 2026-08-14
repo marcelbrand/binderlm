@@ -24,13 +24,14 @@ binderlm/
 │       ├── build.go              # 'build' subcommand (local assembly)
 │       ├── login.go              # 'login' subcommand (interactive developer OAuth)
 │       ├── logout.go             # 'logout' subcommand (credential cleanup)
+│       ├── setup.go              # 'setup' subcommand (interactive credential setup wizard)
 │       ├── sync.go               # 'sync' subcommand (Drive upload & upsert)
 │       ├── validate.go           # 'validate' subcommand (config & path linting)
 │       └── version.go            # 'version' subcommand
 ├── internal/
 │   ├── config/
 │   │   ├── config.go             # Schema structs & YAML unmarshaling (gopkg.in/yaml.v3)
-│   │   ├── env.go                # Environment variable overrides (GDRIVE_FOLDER_ID, etc.)
+│   │   ├── env.go                # Environment variable overrides & .env file loader
 │   │   └── validator.go          # Schema semantic validation
 │   ├── validator/
 │   │   └── validator.go          # Deep path, glob, frontmatter & auth validation engine
@@ -44,8 +45,9 @@ binderlm/
 │   │   └── model.go              # In-memory document and section models
 │   └── drive/
 │       ├── client.go             # Google Drive API v3 client factory
-│       ├── auth.go               # Auth resolution hierarchy & status inspector
+│       ├── auth.go               # 5-tier auth resolution hierarchy & status inspector
 │       ├── oauth.go              # Interactive OAuth2 flow & token cache manager
+│       ├── paths.go              # Central ~/.config/binderlm/ path & credential loader
 │       └── uploader.go           # Idempotent search, create & update operations
 ├── binderlm.example.yaml         # Reference configuration template
 ├── README.md                     # User-facing documentation & quick start
@@ -117,11 +119,12 @@ sections:
    - Update if existing file exists, create if missing.
    - Always upload with MIME type `text/markdown` to prevent auto-conversion.
 
-3. **Authentication Hierarchy**:
+3. **Authentication Hierarchy (5-Tier Resolution)**:
    - 1st: `GOOGLE_APPLICATION_CREDENTIALS_JSON` (in-memory JSON string for CI/CD).
    - 2nd: `GOOGLE_APPLICATION_CREDENTIALS` (filepath to service account JSON).
-   - 3rd: Cached Developer OAuth Token (`~/.config/binderlm/token.json` via `binderlm login`).
-   - 4th: Application Default Credentials (ADC).
+   - 3rd: Global Service Account (`~/.config/binderlm/service_account.json`).
+   - 4th: Cached Developer OAuth Token (`~/.config/binderlm/token.json` via `binderlm login`).
+   - 5th: Application Default Credentials (ADC).
    - Folder ID: CLI flag `--folder-id` > Config file `drive.folder_id` > Env var `GDRIVE_FOLDER_ID`.
 
 4. **Error Handling**:

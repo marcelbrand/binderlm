@@ -104,49 +104,78 @@ sections:
 
 | Command | Flags | Description |
 | :--- | :--- | :--- |
+| `binderlm setup` | | Interactive setup wizard for OAuth client credentials or Service Account keys. |
+| `binderlm login` | `--port`<br>`--no-browser`<br>`--client-id`<br>`--client-secret` | Initiates interactive OAuth2 browser login for personal Google Drive accounts. |
+| `binderlm auth status` | | Inspects active Google Drive authentication method and account. |
+| `binderlm logout` | | Deletes locally cached OAuth credentials from disk. |
 | `binderlm build` | `-c, --config <path>`<br>`-o, --output <path>`<br>`--stdout` | Assembles local markdown files into a single unified context file. |
 | `binderlm sync` | `-c, --config <path>`<br>`--folder-id <id>`<br>`--dry-run`<br>`--keep-local` | Assembles markdown and uploads/updates the target file in Google Drive. |
 | `binderlm validate` | `-c, --config <path>`<br>`--strict`<br>`--check-drive` | Validates configuration schema, file paths, globs, frontmatter syntax, and Drive auth. |
 | `binderlm version` | | Prints version and build metadata. |
 
 ### Global Flags
+- `-a, --auth string`: Authentication mode override: `'user'` (personal OAuth), `'sa'` (Service Account), or `'auto'` (default).
 - `-c, --config string`: Path to config file (default: `binderlm.yaml` or `.binderlm.yaml`).
+- `-e, --env-file string`: Path to `.env` file to load environment variables from.
 - `-v, --verbose`: Enable verbose debug logging.
-- `--help`: Help for any command.
+- `-h, --help`: Help for any command.
 
 ---
 
 ## 🔐 Google Drive Setup & Authentication
 
-Follow these steps to configure Google Drive sync with a Google Service Account:
+`binderlm` stores local configurations and credentials centrally in `~/.config/binderlm/`:
 
-### 1. Enable Google Drive API in GCP
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
-2. Create a new project or select an existing project.
-3. Navigate to **APIs & Services** &rarr; **Library**.
-4. Search for **Google Drive API** and click **Enable**.
+```
+~/.config/binderlm/
+├── client.json           # OAuth Desktop Client ID & Secret
+├── token.json            # Cached OAuth User Token (created by 'binderlm login')
+└── service_account.json  # Global Service Account Key (optional)
+```
 
-### 2. Create a Service Account & Download Key
-1. Go to **IAM & Admin** &rarr; **Service Accounts**.
-2. Click **Create Service Account**, give it a name (e.g. `binderlm-sync`), and click **Done**.
-3. Click on the newly created service account &rarr; select the **Keys** tab.
-4. Click **Add Key** &rarr; **Create new key** &rarr; choose **JSON** format.
-5. Download the JSON key file (e.g. `credentials.json`). See [`credentials.example.json`](credentials.example.json) for reference.
+---
 
-### 3. Share Target Google Drive Folder with the Service Account
-1. Open Google Drive in your browser.
-2. Create or navigate to the folder where you want your NotebookLM sources stored.
-3. Click **Share** &rarr; paste the Service Account email address (e.g. `binderlm-sync@your-project.iam.gserviceaccount.com`).
-4. Grant **Editor** permissions and uncheck "Notify people" (service accounts cannot receive emails).
-5. Copy the **Folder ID** from the folder URL (the string after `/folders/` in your browser address bar).
+### 1. Interactive Setup Wizard (`binderlm setup`)
 
-### 4. Interactive Developer Login (`binderlm login`)
-
-For local development or personal Google Drive usage without managing Service Account keys:
+The quickest way to configure credentials on your local machine is the interactive setup wizard:
 
 ```bash
-# Log in with your personal Google account (optionally loading credentials from a .env file)
-binderlm login --env-file .env
+# Launch interactive setup wizard
+binderlm setup
+```
+
+The wizard guides you through:
+1. **OAuth2 Developer Account:** Configures your Desktop Client credentials in `~/.config/binderlm/client.json` and initiates browser login.
+2. **Service Account Key:** Saves your downloaded Service Account JSON in `~/.config/binderlm/service_account.json`.
+
+---
+
+### 2. Manual Google Cloud Console Setup
+
+#### For Personal Accounts (OAuth 2.0 Desktop App):
+1. In the [Google Cloud Console](https://console.cloud.google.com/), navigate to **APIs & Services** &rarr; **Credentials**.
+2. Click **+ Create Credentials** &rarr; **OAuth client ID**.
+3. Set **Application type** to **Desktop App** (Desktop-Anwendung).
+4. In **OAuth consent screen**:
+   * If in *Testing* status, add your `@gmail.com` address under **Test users**.
+   * *(Recommended)* Set publishing status to **In Production** (External) so your OAuth refresh token never expires.
+
+#### For CI/CD & Teams (Service Accounts):
+1. Go to **IAM & Admin** &rarr; **Service Accounts** &rarr; **Create Service Account**.
+2. Go to the **Keys** tab &rarr; **Add Key** &rarr; **Create new key (JSON)**.
+3. In Google Drive, share your target folder with the Service Account email as **Editor** (uncheck "Notify people").
+4. Copy the **Folder ID** from the folder's browser address bar.
+
+---
+
+### 3. Developer Commands Reference
+
+```bash
+# Interactive setup wizard
+binderlm setup
+
+# Log in with your personal Google account
+binderlm login
 
 # Check active authentication status
 binderlm auth status

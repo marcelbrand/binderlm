@@ -155,14 +155,21 @@ binderlm/
 ├── cmd/
 │   └── binderlm/
 │       ├── main.go               # Cobra CLI root & entry point
+│       ├── auth.go               # 'auth status' subcommand
 │       ├── build.go              # 'build' subcommand
+│       ├── login.go              # 'login' subcommand
+│       ├── logout.go             # 'logout' subcommand
+│       ├── setup.go              # 'setup' subcommand
 │       ├── sync.go               # 'sync' subcommand
-│       └── validate.go           # 'validate' subcommand
+│       ├── validate.go           # 'validate' subcommand
+│       └── version.go            # 'version' subcommand
 ├── internal/
 │   ├── config/
 │   │   ├── config.go             # Struct definitions & YAML unmarshaling
-│   │   ├── env.go                # Env var overrides (GDRIVE_FOLDER_ID, etc.)
+│   │   ├── env.go                # Env var overrides & .env file loader
 │   │   └── validator.go          # Configuration and path validation
+│   ├── validator/
+│   │   └── validator.go          # Deep path, glob, frontmatter & auth validation engine
 │   ├── parser/
 │   │   ├── frontmatter.go        # goldmark-meta wrapper & frontmatter stripper
 │   │   ├── heading_shifter.go    # Goldmark AST walker for safe heading demoting
@@ -173,7 +180,9 @@ binderlm/
 │   │   └── model.go              # In-memory document representation
 │   └── drive/
 │       ├── client.go             # Google Drive API client factory
-│       ├── auth.go               # Service account resolution (file & env JSON)
+│       ├── auth.go               # 5-tier auth resolution hierarchy & status inspector
+│       ├── oauth.go              # Interactive OAuth2 flow & token cache manager
+│       ├── paths.go              # Central ~/.config/binderlm/ path & credential loader
 │       └── uploader.go           # Search, Create, Update idempotent operations
 ├── go.mod
 ├── go.sum
