@@ -110,7 +110,7 @@ sections:
 | `binderlm logout` | | Deletes locally cached OAuth credentials from disk. |
 | `binderlm build` | `-c, --config <path>`<br>`-o, --output <path>`<br>`--stdout` | Assembles local markdown files into a single unified context file. |
 | `binderlm sync` | `-c, --config <path>`<br>`-a, --auth <mode>`<br>`-e, --env-file <path>`<br>`--folder-id <id>`<br>`--dry-run`<br>`--keep-local`<br>`-o, --output <path>` | Assembles markdown and uploads/updates the target file in Google Drive. |
-| `binderlm validate` | `-c, --config <path>`<br>`--strict`<br>`--check-drive` | Validates configuration schema, file paths, globs, frontmatter syntax, and Drive auth. |
+| `binderlm validate` | `-c, --config <path>`<br>`--strict`<br>`--check-drive`<br>`--skip-drive` | Validates configuration schema, file paths, globs, frontmatter syntax, and Drive auth. |
 | `binderlm version` | | Prints version and build metadata. |
 
 ### Global Flags

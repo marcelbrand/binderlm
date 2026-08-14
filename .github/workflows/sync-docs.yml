@@ -14,6 +14,8 @@ jobs:
   stitch-and-sync:
     name: Aggregate and Sync Documentation
     runs-on: ubuntu-latest
+    env:
+      GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -29,7 +31,5 @@ jobs:
           go run ./cmd/binderlm validate --config binderlm.yaml
 
       - name: Compile and Sync to Google Drive
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
         run: |
           go run ./cmd/binderlm sync --config binderlm.yaml

@@ -55,6 +55,7 @@ func (d Diagnostic) String() string {
 // ValidationOptions controls validator behavior.
 type ValidationOptions struct {
 	CheckDrive bool
+	SkipDrive  bool
 	Strict     bool
 }
 
@@ -111,7 +112,7 @@ func Validate(ctx context.Context, cfg *config.Config, opts ValidationOptions) (
 	result.FileCount = len(seenFiles)
 
 	// 3. Validate Google Drive configuration & credentials if requested/enabled
-	if cfg.Drive.Enabled || opts.CheckDrive {
+	if (cfg.Drive.Enabled || opts.CheckDrive) && !opts.SkipDrive {
 		result.DriveChecked = true
 		if strings.TrimSpace(cfg.Drive.FolderID) == "" {
 			result.Diagnostics = append(result.Diagnostics, Diagnostic{

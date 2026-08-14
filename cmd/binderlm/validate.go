@@ -12,6 +12,7 @@ import (
 var (
 	strictValidation bool
 	checkDrive       bool
+	skipDrive        bool
 )
 
 var validateCmd = &cobra.Command{
@@ -26,6 +27,7 @@ referenced markdown files, and verifies Google Drive configuration and credentia
 func init() {
 	validateCmd.Flags().BoolVar(&strictValidation, "strict", false, "Treat warnings as errors (e.g. globs matching 0 files)")
 	validateCmd.Flags().BoolVar(&checkDrive, "check-drive", false, "Verify Google Drive authentication and folder configuration even if drive is disabled")
+	validateCmd.Flags().BoolVar(&skipDrive, "skip-drive", false, "Skip Google Drive authentication and folder configuration check")
 	rootCmd.AddCommand(validateCmd)
 }
 
@@ -37,6 +39,7 @@ func runValidate(cmd *cobra.Command, args []string) error {
 
 	opts := validator.ValidationOptions{
 		CheckDrive: checkDrive,
+		SkipDrive:  skipDrive,
 		Strict:     strictValidation,
 	}
 

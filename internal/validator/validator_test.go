@@ -254,4 +254,16 @@ func TestValidate_DriveCheckWithoutCreds(t *testing.T) {
 	if !res.HasAuthError {
 		t.Errorf("expected HasAuthError to be true")
 	}
+
+	// When SkipDrive is true, validation should succeed even with drive enabled and no credentials
+	resSkipped, err := Validate(context.Background(), cfg, ValidationOptions{SkipDrive: true})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !resSkipped.Valid {
+		t.Errorf("expected config to be valid when SkipDrive is true, got: %+v", resSkipped.Diagnostics)
+	}
+	if resSkipped.DriveChecked {
+		t.Errorf("expected DriveChecked to be false when SkipDrive is true")
+	}
 }
