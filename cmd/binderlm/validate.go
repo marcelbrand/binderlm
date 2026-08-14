@@ -60,8 +60,12 @@ func runValidate(cmd *cobra.Command, args []string) error {
 	}
 
 	// Print Summary
+	cfgPath := configFile
+	if cfgPath == "" {
+		cfgPath = "binderlm.yaml"
+	}
 	fmt.Fprintf(os.Stderr, "\nValidation Summary:\n")
-	fmt.Fprintf(os.Stderr, "  Config File:    %s\n", configFile)
+	fmt.Fprintf(os.Stderr, "  Config File:    %s\n", cfgPath)
 	fmt.Fprintf(os.Stderr, "  Sections:       %d\n", result.SectionCount)
 	fmt.Fprintf(os.Stderr, "  Files Resolved: %d\n", result.FileCount)
 	if result.DriveChecked {

@@ -1,0 +1,32 @@
+version: "1"
+
+# Output settings
+output:
+  filename: "binderlm_docs_latest.md"
+  title: "binderlm — Master Documentation & Specification"
+  description: "Aggregated documentation and specifications for binderlm"
+  generate_toc: true
+  inject_source_hints: true
+  frontmatter_mode: "strip"
+  max_heading_level: 6
+
+# Google Drive Target Configuration
+drive:
+  enabled: false
+  folder_id: ""
+  mime_type: "text/markdown"
+
+# Sections and Document Structure
+sections:
+  - title: "Overview & User Guide"
+    level: 1
+    files:
+      - "./README.md"
+  - title: "Technical Specification & Architecture"
+    level: 1
+    files:
+      - "./SPEC.md"
+  - title: "Agent Guidelines & Architecture Map"
+    level: 1
+    files:
+      - "./AGENTS.md"
