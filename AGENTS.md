@@ -27,7 +27,9 @@ binderlm/
 │   ├── config/
 │   │   ├── config.go             # Schema structs & YAML unmarshaling (gopkg.in/yaml.v3)
 │   │   ├── env.go                # Environment variable overrides (GDRIVE_FOLDER_ID, etc.)
-│   │   └── validator.go          # Config rules & path resolution validation
+│   │   └── validator.go          # Schema semantic validation
+│   ├── validator/
+│   │   └── validator.go          # Deep path, glob, frontmatter & auth validation engine
 │   ├── parser/
 │   │   ├── frontmatter.go        # YAML frontmatter extraction & stripping (goldmark-meta)
 │   │   ├── heading_shifter.go    # Goldmark AST walker for safe heading demoting

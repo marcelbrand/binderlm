@@ -104,9 +104,9 @@ sections:
 
 | Command | Flags | Description |
 | :--- | :--- | :--- |
-| `binderlm build` | `-c, --config <path>`<br>`-o, --output <path>` | Assembles local markdown files into a single unified context file. |
-| `binderlm sync` | `-c, --config <path>`<br>`--dry-run`<br>`--folder-id <id>` | Assembles markdown and uploads/updates the target file in Google Drive. |
-| `binderlm validate` | `-c, --config <path>` | Validates configuration, file paths, and frontmatter syntax. |
+| `binderlm build` | `-c, --config <path>`<br>`-o, --output <path>`<br>`--stdout` | Assembles local markdown files into a single unified context file. |
+| `binderlm sync` | `-c, --config <path>`<br>`--folder-id <id>`<br>`--dry-run`<br>`--keep-local` | Assembles markdown and uploads/updates the target file in Google Drive. |
+| `binderlm validate` | `-c, --config <path>`<br>`--strict`<br>`--check-drive` | Validates configuration schema, file paths, globs, frontmatter syntax, and Drive auth. |
 | `binderlm version` | | Prints version and build metadata. |
 
 ### Global Flags
@@ -133,25 +133,20 @@ Follow these steps to configure Google Drive sync with a Google Service Account:
 4. Click **Add Key** &rarr; **Create new key** &rarr; choose **JSON** format.
 5. Download the JSON key file (e.g. `credentials.json`). See [`credentials.example.json`](credentials.example.json) for reference.
 
-### 3. Configure Target Folder in Google Drive
-1. In Google Drive, open the folder you want to sync into.
-2. Copy the **Folder ID** from your browser address bar:
-   `https://drive.google.com/drive/folders/<FOLDER_ID>`
-3. Click **Share** on the folder and add your Service Account's email address (e.g. `binderlm-sync@your-project.iam.gserviceaccount.com`) with the **Editor** role.
+### 3. Share Target Google Drive Folder with the Service Account
+1. Open Google Drive in your browser.
+2. Create or navigate to the folder where you want your NotebookLM sources stored.
+3. Click **Share** &rarr; paste the Service Account email address (e.g. `binderlm-sync@your-project.iam.gserviceaccount.com`).
+4. Grant **Editor** permissions and uncheck "Notify people" (service accounts cannot receive emails).
+5. Copy the **Folder ID** from the folder URL (the string after `/folders/` in your browser address bar).
 
-> [!TIP]
-> **Personal "My Drive" vs Google Workspace "Shared Drives":**  
-> Google Cloud Service Accounts do not have personal Drive storage quota.  
-> - If using a **Google Workspace Shared Drive (Team Drive)**, the service account can create new files directly.  
-> - If using a **personal "My Drive" folder**, create a blank placeholder file once (e.g., `project_context_latest.md`) inside the folder. `binderlm` will subsequently update it in-place without triggering quota limits.
+### 4. Environment Variables
 
-### 4. Provide Credentials to `binderlm`
-| Environment Variable | Description |
+| Variable | Description |
 | :--- | :--- |
 | `GOOGLE_APPLICATION_CREDENTIALS` | Local file path to the Service Account JSON key (e.g. `./credentials.json`). |
 | `GOOGLE_APPLICATION_CREDENTIALS_JSON` | Raw JSON string content of the Service Account key (ideal for CI/CD secrets). |
 | `GDRIVE_FOLDER_ID` | Optional default folder ID override (can also be configured in `binderlm.yaml` or `--folder-id`). |
-
 
 ---
 
@@ -181,11 +176,12 @@ jobs:
         with:
           go-version: '1.22'
 
-      - name: Build & Sync with binderlm
+      - name: Validate & Sync with binderlm
         env:
           GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_KEY }}
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
         run: |
+          go run ./cmd/binderlm validate --config binderlm.yaml
           go run ./cmd/binderlm sync --config binderlm.yaml
 ```
 
@@ -198,12 +194,16 @@ cmd/
   binderlm/
     main.go           # CLI Entrypoint (Cobra root & flags)
     build.go          # 'build' subcommand (local assembly)
+    sync.go           # 'sync' subcommand (Google Drive upsert & dry-run)
+    validate.go       # 'validate' subcommand (static & deep linting)
     version.go        # 'version' subcommand
 internal/
   config/
     config.go         # YAML parser & defaults
     env.go            # Environment variable overrides
     validator.go      # Configuration semantic validation
+  validator/
+    validator.go      # Deep path, glob, frontmatter & auth validation
   parser/
     frontmatter.go    # YAML frontmatter extraction & modes (strip, table, keep)
     heading_shifter.go# AST-safe markdown heading demotion/shifting
@@ -212,6 +212,10 @@ internal/
     assembler.go      # Section collector, ordering & assembly
     model.go          # Document and section data models
     toc.go            # TOC generator & slug disambiguation
+  drive/
+    auth.go           # Service Account auth resolution (JSON & file)
+    client.go         # Google Drive v3 client factory
+    uploader.go       # Idempotent file search, create & update
 ```
 
 For in-depth architectural details, requirements, and technical specifications, refer to [SPEC.md](SPEC.md).
@@ -223,7 +227,7 @@ For in-depth architectural details, requirements, and technical specifications, 
 - [x] Initial Architecture & Specification ([SPEC.md](SPEC.md))
 - [x] **Phase 1**: Core Parser, Heading Shifter & Assembler (Local `build`)
 - [x] **Phase 2**: Google Drive API v3 Client, Idempotent Upsert & Dry-Run (`sync`)
-- [ ] **Phase 3**: Configuration & Path Validation Subcommand (`validate`), Unit & Golden Tests
+- [x] **Phase 3**: Configuration & Path Validation Subcommand (`validate`), Unit & Golden Tests, CI/CD Workflows
 - [ ] **Phase 4**: Interactive Developer OAuth Login (`binderlm login`) for personal Google Drive accounts
 - [ ] **Phase 5**: Automated GitHub Actions and Release pipeline
 
@@ -232,4 +236,3 @@ For in-depth architectural details, requirements, and technical specifications, 
 ## 📄 License
 
 Distributed under the Apache 2.0 License. See [LICENSE](LICENSE) for more information.
-

@@ -1,0 +1,36 @@
+name: Sync Docs to NotebookLM
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - '**/docs/**'
+      - '*.md'
+      - 'binderlm.yaml'
+  workflow_dispatch:
+
+jobs:
+  stitch-and-sync:
+    name: Aggregate and Sync Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache: true
+
+      - name: Validate Configuration & Sources
+        run: |
+          go run ./cmd/binderlm validate --config binderlm.yaml
+
+      - name: Compile and Sync to Google Drive
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_KEY }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+        run: |
+          go run ./cmd/binderlm sync --config binderlm.yaml
