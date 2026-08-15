@@ -131,11 +131,20 @@ sections:
    - Flag Override: `-a, --auth <user|sa>` directly forces user OAuth or Service Account.
    - Folder ID: CLI flag `--folder-id` > Config file `drive.folder_id` > Env var `GDRIVE_FOLDER_ID`.
 
-4. **Error Handling**:
+4. **Offline-First Validation**:
+   - `binderlm validate` runs offline by default (checking YAML schema, file paths, globs, frontmatter) without requiring network access or Drive credentials.
+   - Remote Google Drive authentication and folder accessibility checks are strictly opt-in via `--check-drive`.
+
+5. **Container & CI/CD Conventions**:
+   - `Dockerfile`: Multi-stage build (`golang:alpine` -> `alpine:3.20`), runs as non-root `binderlm` (`UID 10001`), root CA certificates included.
+   - `action.yml`: Composite GitHub Action wrapping Docker execution so external repos can use `marcelbrand/binderlm@v1` without Go pre-installed.
+   - Release Builds: Use Go linker flags `-X main.Version=${VERSION} -X main.GitCommit=${GITHUB_SHA} -X main.BuildDate=${BUILD_DATE}` targeting package-level symbols in `cmd/binderlm/version.go`.
+
+6. **Error Handling**:
    - Provide clear, actionable error messages with file paths and line numbers where available.
    - Return appropriate exit codes (`0` = success, `1` = general error, `2` = auth failure).
 
-5. **Key Documentation References**:
+7. **Key Documentation References**:
    - Detailed specification and requirements: [SPEC.md](SPEC.md)
    - CLI usage & examples: [README.md](README.md)
    - Example configuration: [binderlm.example.yaml](binderlm.example.yaml)
