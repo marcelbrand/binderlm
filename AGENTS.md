@@ -140,11 +140,15 @@ sections:
    - `action.yml`: Composite GitHub Action wrapping Docker execution so external repos can use `marcelbrand/binderlm@v1` without Go pre-installed.
    - Release Builds: Use Go linker flags `-X main.Version=${VERSION} -X main.GitCommit=${GITHUB_SHA} -X main.BuildDate=${BUILD_DATE}` targeting package-level symbols in `cmd/binderlm/version.go`.
 
-6. **Error Handling**:
+6. **Git & Commit Policy**:
+   - **Never run `git commit` or `git push` autonomously**.
+   - All Git commits, tags, and pushes must be made directly by the developer/user.
+
+7. **Error Handling**:
    - Provide clear, actionable error messages with file paths and line numbers where available.
    - Return appropriate exit codes (`0` = success, `1` = general error, `2` = auth failure).
 
-7. **Key Documentation References**:
+8. **Key Documentation References**:
    - Detailed specification and requirements: [SPEC.md](SPEC.md)
    - CLI usage & examples: [README.md](README.md)
    - Example configuration: [binderlm.example.yaml](binderlm.example.yaml)

@@ -28,7 +28,7 @@ In modern software architectures, documentation is ideally maintained close to t
 
 ```bash
 # Install via Go CLI
-go install github.com/your-org/binderlm/cmd/binderlm@latest
+go install github.com/marcelbrand/binderlm/cmd/binderlm@latest
 ```
 
 ### Basic Commands
@@ -322,6 +322,8 @@ jobs:
 | `output` | Output filepath for assembled markdown (`build` or `sync`). | `""` |
 | `strict` | Treat warnings as fatal errors in `validate`. | `false` |
 | `check-drive` | Verify Google Drive access during `validate`. | `false` |
+| `skip-drive` | Skip Google Drive check during `validate`. | `false` |
+| `env-file` | Path to `.env` file to load environment variables from. | `""` |
 | `google-application-credentials-json` | Service account JSON secret for Google Drive API. | `""` |
 | `image` | Custom Docker image tag to execute. | `ghcr.io/marcelbrand/binderlm:latest` |
 
