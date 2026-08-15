@@ -25,6 +25,7 @@ jobs:
         with:
           command: validate
           config: binderlm.yaml
+          skip-drive: true
 
       - name: Aggregate and Sync to Google Drive
         uses: ./

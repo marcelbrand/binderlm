@@ -321,6 +321,7 @@ jobs:
 | `keep-local` | Retain the assembled markdown file after syncing. | `false` |
 | `output` | Output filepath for assembled markdown (`build` or `sync`). | `""` |
 | `strict` | Treat warnings as fatal errors in `validate`. | `false` |
+| `skip-drive` | Skip Google Drive auth/access check during `validate`. | `false` |
 | `google-application-credentials-json` | Service account JSON secret for Google Drive API. | `""` |
 | `image` | Custom Docker image tag to execute. | `ghcr.io/marcelbrand/binderlm:latest` |
 
