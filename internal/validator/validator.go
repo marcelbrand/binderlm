@@ -111,13 +111,13 @@ func Validate(ctx context.Context, cfg *config.Config, opts ValidationOptions) (
 
 	result.FileCount = len(seenFiles)
 
-	// 3. Validate Google Drive configuration & credentials if requested/enabled
-	if (cfg.Drive.Enabled || opts.CheckDrive) && !opts.SkipDrive {
+	// 3. Validate Google Drive configuration & credentials if explicitly requested
+	if opts.CheckDrive && !opts.SkipDrive {
 		result.DriveChecked = true
 		if strings.TrimSpace(cfg.Drive.FolderID) == "" {
 			result.Diagnostics = append(result.Diagnostics, Diagnostic{
 				Severity: SeverityError,
-				Message:  "Google Drive is enabled but folder_id is not specified (provide --folder-id, set drive.folder_id in config, or GDRIVE_FOLDER_ID env var)",
+				Message:  "Google Drive check requested but folder_id is not specified (provide --folder-id, set drive.folder_id in config, or GDRIVE_FOLDER_ID env var)",
 			})
 			result.ErrorCount++
 		}

@@ -243,27 +243,30 @@ func TestValidate_DriveCheckWithoutCreds(t *testing.T) {
 		},
 	}
 
-	res, err := Validate(context.Background(), cfg, ValidationOptions{})
+	// Default mode (CheckDrive=false): should be valid even with drive enabled and no credentials
+	resDefault, err := Validate(context.Background(), cfg, ValidationOptions{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-
-	if res.Valid {
-		t.Errorf("expected config to be invalid due to missing Google credentials")
+	if !resDefault.Valid {
+		t.Errorf("expected config to be valid by default without checking Drive, got: %+v", resDefault.Diagnostics)
 	}
-	if !res.HasAuthError {
-		t.Errorf("expected HasAuthError to be true")
+	if resDefault.DriveChecked {
+		t.Errorf("expected DriveChecked to be false by default")
 	}
 
-	// When SkipDrive is true, validation should succeed even with drive enabled and no credentials
-	resSkipped, err := Validate(context.Background(), cfg, ValidationOptions{SkipDrive: true})
+	// Explicit CheckDrive=true without credentials: should fail
+	resCheck, err := Validate(context.Background(), cfg, ValidationOptions{CheckDrive: true})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if !resSkipped.Valid {
-		t.Errorf("expected config to be valid when SkipDrive is true, got: %+v", resSkipped.Diagnostics)
+	if resCheck.Valid {
+		t.Errorf("expected config to be invalid when CheckDrive is true and credentials are missing")
 	}
-	if resSkipped.DriveChecked {
-		t.Errorf("expected DriveChecked to be false when SkipDrive is true")
+	if !resCheck.HasAuthError {
+		t.Errorf("expected HasAuthError to be true when CheckDrive is true")
+	}
+	if !resCheck.DriveChecked {
+		t.Errorf("expected DriveChecked to be true when CheckDrive is true")
 	}
 }

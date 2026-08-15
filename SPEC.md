@@ -295,8 +295,7 @@ type SyncResult struct {
 * **Flags:**
   * `-c, --config <path>`: Path to config file (default `binderlm.yaml`).
   * `--strict`: Treat warnings (such as unmatched glob patterns) as fatal errors.
-  * `--check-drive`: Validate Google Drive credentials and folder access.
-* **Description:** Performs static analysis on `binderlm.yaml`, checks file/glob resolution, verifies frontmatter validity, and checks Google Drive credentials if configured.
+* **Description:** Performs offline static analysis on `binderlm.yaml`, checks file/glob resolution, and verifies frontmatter validity. When `--check-drive` is specified, also validates Google Drive credentials and target folder accessibility.
 * **Exit Codes:** `0` on success, `1` on validation failure, `2` on auth failure.
 
 ---

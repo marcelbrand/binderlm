@@ -110,7 +110,7 @@ sections:
 | `binderlm logout` | | Deletes locally cached OAuth credentials from disk. |
 | `binderlm build` | `-c, --config <path>`<br>`-o, --output <path>`<br>`--stdout` | Assembles local markdown files into a single unified context file. |
 | `binderlm sync` | `-c, --config <path>`<br>`-a, --auth <mode>`<br>`-e, --env-file <path>`<br>`--folder-id <id>`<br>`--dry-run`<br>`--keep-local`<br>`-o, --output <path>` | Assembles markdown and uploads/updates the target file in Google Drive. |
-| `binderlm validate` | `-c, --config <path>`<br>`--strict`<br>`--check-drive`<br>`--skip-drive` | Validates configuration schema, file paths, globs, frontmatter syntax, and Drive auth. |
+| `binderlm validate` | `-c, --config <path>`<br>`--strict`<br>`--check-drive` | Validates configuration schema, file paths, globs, and frontmatter syntax offline. Use `--check-drive` to verify Google Drive credentials and folder access. |
 | `binderlm version` | | Prints version and build metadata. |
 
 ### Global Flags
@@ -321,7 +321,7 @@ jobs:
 | `keep-local` | Retain the assembled markdown file after syncing. | `false` |
 | `output` | Output filepath for assembled markdown (`build` or `sync`). | `""` |
 | `strict` | Treat warnings as fatal errors in `validate`. | `false` |
-| `skip-drive` | Skip Google Drive auth/access check during `validate`. | `false` |
+| `check-drive` | Verify Google Drive access during `validate`. | `false` |
 | `google-application-credentials-json` | Service account JSON secret for Google Drive API. | `""` |
 | `image` | Custom Docker image tag to execute. | `ghcr.io/marcelbrand/binderlm:latest` |
 

@@ -107,3 +107,28 @@ func TestValidateIntegration_StrictFailsOnEmptyGlob(t *testing.T) {
 		t.Errorf("expected strict mode to fail when warnings exist")
 	}
 }
+
+func TestValidateIntegration_RootConfigOffline(t *testing.T) {
+	configPath, err := filepath.Abs("../binderlm.yaml")
+	if err != nil {
+		t.Fatalf("failed to get abs path: %v", err)
+	}
+
+	cfg, err := config.Load(configPath)
+	if err != nil {
+		t.Fatalf("failed to load root binderlm.yaml: %v", err)
+	}
+
+	// Should pass validation without checking Drive
+	res, err := validator.Validate(context.Background(), cfg, validator.ValidationOptions{})
+	if err != nil {
+		t.Fatalf("validation failed with error: %v", err)
+	}
+
+	if !res.Valid {
+		t.Errorf("expected root binderlm.yaml to validate offline, got diagnostics: %+v", res.Diagnostics)
+	}
+	if res.DriveChecked {
+		t.Errorf("expected DriveChecked to be false by default")
+	}
+}

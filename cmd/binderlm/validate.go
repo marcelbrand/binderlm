@@ -26,8 +26,8 @@ referenced markdown files, and verifies Google Drive configuration and credentia
 
 func init() {
 	validateCmd.Flags().BoolVar(&strictValidation, "strict", false, "Treat warnings as errors (e.g. globs matching 0 files)")
-	validateCmd.Flags().BoolVar(&checkDrive, "check-drive", false, "Verify Google Drive authentication and folder configuration even if drive is disabled")
-	validateCmd.Flags().BoolVar(&skipDrive, "skip-drive", false, "Skip Google Drive authentication and folder configuration check")
+	validateCmd.Flags().BoolVar(&checkDrive, "check-drive", false, "Verify Google Drive authentication and folder configuration")
+	validateCmd.Flags().BoolVar(&skipDrive, "skip-drive", false, "Explicitly skip Google Drive verification (default)")
 	rootCmd.AddCommand(validateCmd)
 }
 
