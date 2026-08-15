@@ -1,0 +1,15 @@
+.git
+.github
+bin
+dist
+*.md
+!README.md
+.env
+.env.*
+credentials.json
+token.json
+client.json
+service_account.json
+test
+examples
+.DS_Store

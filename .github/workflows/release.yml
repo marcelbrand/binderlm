@@ -40,9 +40,10 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
         run: |
           VERSION="${GITHUB_REF_NAME}"
+          BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           OUTPUT_NAME="binderlm-${VERSION}-${{ matrix.goos }}-${{ matrix.goarch }}"
           mkdir -p dist
-          go build -ldflags="-s -w -X main.version=${VERSION}" -o "dist/${OUTPUT_NAME}" ./cmd/binderlm
+          go build -ldflags="-s -w -X main.Version=${VERSION} -X main.GitCommit=${GITHUB_SHA} -X main.BuildDate=${BUILD_DATE}" -o "dist/${OUTPUT_NAME}" ./cmd/binderlm
           tar -czf "dist/${OUTPUT_NAME}.tar.gz" -C dist "${OUTPUT_NAME}"
 
       - name: Upload Artifact

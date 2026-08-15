@@ -346,6 +346,9 @@ gantt
     Unit & Integration Tests        :p3_3, after p3_2, 3d
     section Phase 4: Developer Auth
     Interactive OAuth Login         :p4_1, after p3_3, 2d
+    section Phase 5: Container & Action
+    Dockerfile & Multi-Arch Build   :p5_1, after p4_1, 2d
+    GitHub Action & GHCR Release    :p5_2, after p5_1, 2d
 ```
 
 ### Phase 1: Core Parsing & Local Assembly
@@ -371,3 +374,9 @@ gantt
 * Support secure token caching in `~/.config/binderlm/token.json` (`0600`) so personal Google Drive users can sync and create files directly using personal Drive storage quota without Service Account setup.
 * Introduce `binderlm auth status` command and `-a, --auth <user|sa>` mode override for inspecting and selecting active auth sources.
 * Formulate and document the **Hybrid Personal Drive + CI/CD Workflow** pattern to solve Google Drive's 0-quota limitation for automated pipelines.
+
+### Phase 5: Containerization, GitHub Actions & Multi-Arch GHCR Releases
+* Multi-stage `Dockerfile` producing stripped, statically linked binary running in unprivileged Alpine container (`UID 10001`).
+* Turnkey GitHub Action (`action.yml`) enabling single-step integration in external repositories (`uses: marcelbrand/binderlm@v1`).
+* Automated multi-architecture (`linux/amd64`, `linux/arm64`) Docker container build and publishing pipeline via GitHub Container Registry (`ghcr.io`).
+* Seamless integration with Google Drive synchronization workflows.

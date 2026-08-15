@@ -243,9 +243,35 @@ Google Drive API enforces a **0 MB storage quota** for Service Accounts on perso
 
 ---
 
+## 🐳 Docker Usage
+
+`binderlm` is available as a lightweight, secure container image via GitHub Container Registry (`ghcr.io`):
+
+```bash
+# Display help
+docker run --rm ghcr.io/marcelbrand/binderlm:latest --help
+
+# Validate documentation structure in current repository
+docker run --rm -v "$(pwd):/workspace" -w /workspace \
+  ghcr.io/marcelbrand/binderlm:latest validate -c binderlm.yaml
+
+# Assemble local master context markdown file
+docker run --rm -v "$(pwd):/workspace" -w /workspace \
+  ghcr.io/marcelbrand/binderlm:latest build -c binderlm.yaml -o context.md
+
+# Synchronize directly to Google Drive using Service Account credentials
+docker run --rm -v "$(pwd):/workspace" -w /workspace \
+  -e GOOGLE_APPLICATION_CREDENTIALS_JSON="${GDRIVE_SERVICE_ACCOUNT_KEY}" \
+  ghcr.io/marcelbrand/binderlm:latest sync -c binderlm.yaml
+```
+
+---
+
 ## 🤖 CI/CD Integration (GitHub Actions)
 
-Automatically compile and update your NotebookLM documentation source on every push:
+### 1. Using the Official GitHub Action
+
+You can easily integrate `binderlm` into your GitHub Actions workflow using the official action without needing to set up Go or install dependencies:
 
 ```yaml
 name: Sync Docs to NotebookLM
@@ -258,25 +284,45 @@ on:
       - '**/docs/**'
       - '*.md'
       - 'binderlm.yaml'
+  workflow_dispatch:
 
 jobs:
   stitch-and-sync:
+    name: Aggregate & Sync Documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-go@v5
+      - name: Validate Docs Configuration
+        uses: marcelbrand/binderlm@v1
         with:
-          go-version: '1.26'
+          command: validate
+          config: binderlm.yaml
+          strict: true
 
-      - name: Validate & Sync with binderlm
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_KEY }}
-          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
-        run: |
-          go run ./cmd/binderlm validate --config binderlm.yaml
-          go run ./cmd/binderlm sync --config binderlm.yaml
+      - name: Compile and Sync to Google Drive
+        uses: marcelbrand/binderlm@v1
+        with:
+          command: sync
+          config: binderlm.yaml
+          google-application-credentials-json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
 ```
+
+### Action Inputs
+
+| Input | Description | Default |
+| :--- | :--- | :--- |
+| `command` | Command to run (`sync`, `build`, `validate`). | `sync` |
+| `config` | Path to `binderlm.yaml` configuration file. | `binderlm.yaml` |
+| `folder-id` | Google Drive target folder ID override. | `""` |
+| `auth-mode` | Auth mode override (`auto`, `sa`, `user`). | `auto` |
+| `dry-run` | Run in dry-run mode without modifying Google Drive. | `false` |
+| `keep-local` | Retain the assembled markdown file after syncing. | `false` |
+| `output` | Output filepath for assembled markdown (`build` or `sync`). | `""` |
+| `strict` | Treat warnings as fatal errors in `validate`. | `false` |
+| `google-application-credentials-json` | Service account JSON secret for Google Drive API. | `""` |
+| `image` | Custom Docker image tag to execute. | `ghcr.io/marcelbrand/binderlm:latest` |
 
 ---
 
@@ -327,7 +373,7 @@ For in-depth architectural details, requirements, and technical specifications, 
 - [x] **Phase 2**: Google Drive API v3 Client, Idempotent Upsert & Dry-Run (`sync`)
 - [x] **Phase 3**: Configuration & Path Validation Subcommand (`validate`), Unit & Golden Tests, CI/CD Workflows
 - [x] **Phase 4**: Interactive Setup Wizard (`binderlm setup`), Developer OAuth Login (`binderlm login`), Mode Overrides (`--auth`), and Hybrid CI/CD Documentation
-- [ ] **Phase 5**: Automated GitHub Actions and Release pipeline
+- [x] **Phase 5**: Docker Containerization, GitHub Actions Integration & Automated Release Pipeline
 
 ---
 

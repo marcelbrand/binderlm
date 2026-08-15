@@ -20,16 +20,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
+      - name: Validate Docs Configuration
+        uses: ./
         with:
-          go-version: '1.26'
-          cache: true
+          command: validate
+          config: binderlm.yaml
 
-      - name: Validate Configuration & Sources
-        run: |
-          go run ./cmd/binderlm validate --config binderlm.yaml
-
-      - name: Compile and Sync to Google Drive
-        run: |
-          go run ./cmd/binderlm sync --config binderlm.yaml
+      - name: Aggregate and Sync to Google Drive
+        uses: ./
+        with:
+          command: sync
+          config: binderlm.yaml
+          google-application-credentials-json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}

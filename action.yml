@@ -1,0 +1,113 @@
+name: 'BinderLM Documentation Aggregator & Sync'
+description: 'Aggregate distributed Markdown documentation and synchronize to Google NotebookLM / Google Drive.'
+author: 'Marcel Brand'
+branding:
+  icon: 'book-open'
+  color: 'blue'
+
+inputs:
+  command:
+    description: 'Subcommand to run (sync, build, validate)'
+    required: false
+    default: 'sync'
+  config:
+    description: 'Path to binderlm.yaml configuration file'
+    required: false
+    default: 'binderlm.yaml'
+  folder-id:
+    description: 'Google Drive target folder ID override'
+    required: false
+    default: ''
+  auth-mode:
+    description: 'Authentication mode override (auto, sa, user)'
+    required: false
+    default: 'auto'
+  dry-run:
+    description: 'Execute in dry-run mode without modifying Google Drive'
+    required: false
+    default: 'false'
+  keep-local:
+    description: 'Keep the assembled markdown file locally after syncing'
+    required: false
+    default: 'false'
+  output:
+    description: 'Output filepath override for assembled markdown'
+    required: false
+    default: ''
+  strict:
+    description: 'Treat warnings as fatal errors (validate subcommand)'
+    required: false
+    default: 'false'
+  check-drive:
+    description: 'Check Google Drive access during validation'
+    required: false
+    default: 'false'
+  env-file:
+    description: 'Path to .env file to load variables from'
+    required: false
+    default: ''
+  google-application-credentials-json:
+    description: 'Google Service Account credentials JSON string'
+    required: false
+    default: ''
+  image:
+    description: 'BinderLM Docker image to run'
+    required: false
+    default: 'ghcr.io/marcelbrand/binderlm:latest'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run BinderLM
+      shell: bash
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ inputs.google-application-credentials-json }}
+      run: |
+        ARGS=("${{ inputs.command }}")
+
+        if [ -n "${{ inputs.config }}" ]; then
+          ARGS+=("--config" "${{ inputs.config }}")
+        fi
+
+        if [ -n "${{ inputs.folder-id }}" ]; then
+          ARGS+=("--folder-id" "${{ inputs.folder-id }}")
+        fi
+
+        if [ -n "${{ inputs.auth-mode }}" ] && [ "${{ inputs.auth-mode }}" != "auto" ]; then
+          ARGS+=("--auth" "${{ inputs.auth-mode }}")
+        fi
+
+        if [ -n "${{ inputs.output }}" ]; then
+          ARGS+=("--output" "${{ inputs.output }}")
+        fi
+
+        if [ -n "${{ inputs.env-file }}" ]; then
+          ARGS+=("--env-file" "${{ inputs.env-file }}")
+        fi
+
+        if [ "${{ inputs.dry-run }}" = "true" ]; then
+          ARGS+=("--dry-run")
+        fi
+
+        if [ "${{ inputs.keep-local }}" = "true" ]; then
+          ARGS+=("--keep-local")
+        fi
+
+        if [ "${{ inputs.strict }}" = "true" ]; then
+          ARGS+=("--strict")
+        fi
+
+        if [ "${{ inputs.check-drive }}" = "true" ]; then
+          ARGS+=("--check-drive")
+        fi
+
+        echo "::group::Executing BinderLM (${ARGS[*]})"
+        docker run --rm \
+          -v "${{ github.workspace }}:/workspace" \
+          -w /workspace \
+          -e GOOGLE_APPLICATION_CREDENTIALS_JSON \
+          -e GOOGLE_APPLICATION_CREDENTIALS \
+          -e GDRIVE_FOLDER_ID \
+          "${{ inputs.image }}" \
+          "${ARGS[@]}"
+        echo "::endgroup::"

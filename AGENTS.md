@@ -49,6 +49,9 @@ binderlm/
 │       ├── oauth.go              # Interactive OAuth2 flow & token cache manager
 │       ├── paths.go              # Central ~/.config/binderlm/ path & credential loader
 │       └── uploader.go           # Idempotent search, create & update operations
+├── action.yml                    # Official GitHub Action specification
+├── Dockerfile                    # Multi-stage container definition
+├── .dockerignore                 # Container build context filter
 ├── binderlm.example.yaml         # Reference configuration template
 ├── README.md                     # User-facing documentation & quick start
 ├── SPEC.md                       # Comprehensive technical design & PRD
